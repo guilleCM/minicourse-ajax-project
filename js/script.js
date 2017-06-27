@@ -34,11 +34,32 @@ function loadData() {
         $.each(data["response"]["docs"], function() {
             var title = (this)["headline"].main;
             var link = '<a href='+(this)["web_url"]+'>'+title+'</a>';
-            var parr = '<p> parrafo </p>'
+            var parr = '<p>'+(this)["snippet"]+'</p>';
             articles.push('<li class="article">'+link+parr+'</li>');
         });
         $nytElem.html(articles.join(""));
+    }).error(function(e){
+        alert("Error");
     });
+
+    // WIKIPEDIA AJAX
+    var WIKI_URL='http://en.wikipedia.org/w/api.php?action=opensearch&search='+city+'&format=json&callback=wikiCallback';
+
+    $.ajax({
+        url: WIKI_URL,
+        dataType: 'jsonp',
+        success: function(response) {
+            var articleList=response[1];
+
+            for (var i=0; i<articleList.length; i++){
+                articleStr = articleList[i];
+                var url='http://en.wikipedia.org/wiki/'+articleStr;
+                $wikiElem.append('<li><a href="' +url+ '">' +articleStr+ '</a></li>');
+            };
+        }
+    });
+
+
     return false;
 
 };
